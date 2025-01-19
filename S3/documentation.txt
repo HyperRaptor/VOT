@@ -1,0 +1,157 @@
+Requirements
+
+    Docker and Docker Compose for containerized services.
+    Keycloak for user authentication.
+    MinIO as S3-compatible object storage for managing files.
+    Flask (Python) for the web application that provides the RESTful API.
+
+Project Structure
+
+/file-management-system
+│
+├── /config
+│   └── keycloak-realm.json          # Keycloak realm configuration
+│
+├── /src
+│   └── app.py                       # Flask application code
+│   └── requirements.txt             # Python dependencies
+│   └── Dockerfile                   # Dockerfile for Flask app
+│
+├── docker-compose.yml               # Docker Compose configuration
+└── README.md                        # Project documentation
+
+Setup and Installation
+Step 1: Clone the Repository
+
+git clone https://github.com/your-repo/file-management-system.git
+cd file-management-system
+
+Step 2: Update Configuration Files
+
+Before proceeding, make sure to update your Keycloak realm configuration (/config/keycloak-realm.json) and other settings in the docker-compose.yml file if needed. This includes ensuring correct values for MinIO credentials and Keycloak configurations.
+Step 3: Build and Run the Application
+
+With Docker and Docker Compose installed, you can easily build and start all the services by running:
+
+docker-compose up --build
+
+Step 4: Access the Services
+
+    MinIO Web UI: http://localhost:33095 (username: minioadmin, password: minioadmin).
+    Keycloak Admin Console: http://localhost:8080 (admin credentials: admin / admin).
+    Flask App: http://localhost:5000.
+
+Keycloak Configuration
+Creating a Realm in Keycloak
+
+    Access the Keycloak Admin Console at http://localhost:8080.
+    Log in using admin credentials (admin / admin).
+    Create a new realm for your application.
+    Create a new client:
+        Client ID: file-management-client
+        Client Protocol: openid-connect
+        Root URL: http://localhost:5000/
+        Valid Redirect URIs: http://localhost:5000/*
+        Post Logout Redirect URIs: http://localhost:5000/logout
+        Web Origins: http://localhost:5000
+    Ensure the client authentication is set to client-secret.
+    Export the realm configuration in JSON format (keycloak-realm.json), which will be used in your Docker setup.
+
+API Endpoints
+
+The Flask application exposes the following REST API endpoints:
+1. POST /upload
+
+Description: Upload a file to MinIO storage.
+
+Request:
+
+    Headers:
+        Authorization: Bearer <JWT_TOKEN>
+    Body:
+        file (Form Data): The file to upload.
+
+Example Request (Postman):
+
+    URL: http://localhost:5000/upload
+    Method: POST
+    Body: form-data with a key file and a file value.
+
+2. GET /download/{file_id}
+
+Description: Download a file from MinIO by file_id.
+
+Request:
+
+    Headers:
+        Authorization: Bearer <JWT_TOKEN>
+
+Example Request (Postman):
+
+    URL: http://localhost:5000/download/{file_id}
+    Method: GET
+
+3. PUT /update/{file_id}
+
+Description: Update an existing file in MinIO by file_id.
+
+Request:
+
+    Headers:
+        Authorization: Bearer <JWT_TOKEN>
+    Body:
+        file (Form Data): The new file to upload.
+
+Example Request (Postman):
+
+    URL: http://localhost:5000/update/{file_id}
+    Method: PUT
+    Body: form-data with a key file and a file value.
+
+4. DELETE /delete/{file_id}
+
+Description: Delete a file from MinIO by file_id.
+
+Request:
+
+    Headers:
+        Authorization: Bearer <JWT_TOKEN>
+
+Example Request (Postman):
+
+    URL: http://localhost:5000/delete/{file_id}
+    Method: DELETE
+
+JWT Authentication
+
+The Flask application requires users to authenticate via JWT tokens issued by Keycloak. The following steps outline how to obtain a token:
+
+    Obtain an Access Token:
+        Use the Keycloak login page (e.g., http://localhost:8080/auth/realms/your-realm/protocol/openid-connect/auth) to log in.
+        After successful authentication, Keycloak will issue a JWT token.
+
+    Include the Token in API Requests:
+        Include the JWT token in the Authorization header as Bearer <JWT_TOKEN> for all requests to the API.
+
+Example with Postman
+Get JWT Token:
+
+    Go to Keycloak login URL: http://localhost:8080/auth/realms/your-realm/protocol/openid-connect/auth
+    Log in with your credentials.
+    Retrieve the Access Token from the response.
+
+Upload a File:
+
+    Method: POST
+    URL: http://localhost:5000/upload
+    Headers:
+        Authorization: Bearer <JWT_TOKEN>
+    Body:
+        file (Form Data)
+
+Download a File:
+
+    Method: GET
+    URL: http://localhost:5000/download/{file_id}
+    Headers:
+        Authorization: Bearer <JWT_TOKEN>

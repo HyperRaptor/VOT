@@ -1,0 +1,68 @@
+{
+    "realm": "your-realm", 
+    "enabled": true,
+    "clients": [
+      {
+        "clientId": "your-client-id",
+        "name": "Your Client",
+        "enabled": true,
+        "protocol": "openid-connect",
+        "publicClient": false,
+        "clientAuthenticatorType": "client-secret",
+        "secret": "your-client-secret",
+        "redirectUris": ["http://localhost:5000/*"],
+        "webOrigins": ["*"],
+        "authorizationServicesEnabled": true,
+        "access": {
+          "view": true,
+          "configure": true
+        },
+        "serviceAccountsEnabled": true
+      }
+    ],
+    "users": [
+      {
+        "username": "testuser",
+        "enabled": true,
+        "firstName": "Test",
+        "lastName": "User",
+        "email": "testuser@example.com",
+        "emailVerified": true,
+        "credentials": [
+          {
+            "type": "password",
+            "value": "password"
+          }
+        ]
+      }
+    ],
+    "roles": {
+      "realm": [
+        {
+          "name": "admin",
+          "description": "Administrator role"
+        },
+        {
+          "name": "user",
+          "description": "Basic user role"
+        }
+      ]
+    },
+    "groups": [
+      {
+        "name": "admins",
+        "path": "/admins",
+        "realmRoles": [
+          "admin"
+        ]
+      }
+    ],
+    "realmEventsEnabled": true,
+    "enabledEventTypes": [
+      "LOGIN",
+      "LOGOUT",
+      "CODE_TO_TOKEN",
+      "CLIENT_LOGIN"
+    ]
+  }
+  
